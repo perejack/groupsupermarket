@@ -128,3 +128,10 @@ export default async function handler(req, res) {
     });
   }
 }
+
+// Vercel body parsing config
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
