@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const PAYHERO_API_URL = 'https://backend.payhero.co.ke/api/v2/payments';
 const PAYHERO_AUTH_TOKEN = 'Basic dDEwUm1naWREdEFNUElOWEJmSUY6YjVoMFlTM1JYY29GcEdGUHdFcnhZTTJJTFVWcU1RMEhjMFAxVmJZdQ==';
-const PAYHERO_CHANNEL_ID = 6539;
+const PAYHERO_CHANNEL_ID = 6980;
 
 // Hardcoded Supabase credentials - using SERVICE ROLE key for RLS bypass
 const SUPABASE_URL = 'https://fyftqlnobwmmlwcdjgua.supabase.co';
