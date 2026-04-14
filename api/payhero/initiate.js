@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const PAYHERO_API_URL = 'https://backend.payhero.co.ke/api/v2/payments';
 const PAYHERO_AUTH_TOKEN = 'Basic dDEwUm1naWREdEFNUElOWEJmSUY6YjVoMFlTM1JYY29GcEdGUHdFcnhZTTJJTFVWcU1RMEhjMFAxVmJZdQ==';
-const PAYHERO_CHANNEL_ID = 6980;
+const PAYHERO_CHANNEL_ID = 6539;
 
 // Hardcoded Supabase credentials - using SERVICE ROLE key for RLS bypass
 const SUPABASE_URL = 'https://fyftqlnobwmmlwcdjgua.supabase.co';
@@ -15,22 +15,6 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
     persistSession: false,
   },
 });
-
-// Helper to parse body
-async function parseBody(req) {
-  return new Promise((resolve) => {
-    let data = '';
-    req.on('data', chunk => data += chunk);
-    req.on('end', () => {
-      try {
-        resolve(JSON.parse(data));
-      } catch {
-        resolve(req.body || {});
-      }
-    });
-    req.on('error', () => resolve(req.body || {}));
-  });
-}
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -49,19 +33,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Parse request body
-    const body = await parseBody(req);
+    const { phone_number, amount, reference, description, user_id, application_id } = req.body;
     
-    const { phone_number, amount, reference, description, user_id, application_id } = body;
-    
-    console.log('Received body:', JSON.stringify(body));
-    console.log('Phone:', phone_number, 'Amount:', amount, 'Type:', typeof amount);
-    
-    if (!phone_number || amount === undefined || amount === null) {
-      return res.status(400).json({ 
-        error: 'Phone number and amount are required',
-        received: { phone_number, amount, bodyKeys: Object.keys(body) }
-      });
+    if (!phone_number || !amount) {
+      return res.status(400).json({ error: 'Phone number and amount are required' });
     }
 
     // Format phone number
@@ -141,10 +116,3 @@ export default async function handler(req, res) {
     });
   }
 }
-
-// Vercel body parsing config
-export const config = {
-  api: {
-    bodyParser: true,
-  },
-};
