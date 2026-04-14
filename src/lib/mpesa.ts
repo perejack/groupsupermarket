@@ -41,7 +41,9 @@ export class MpesaService {
       const data = await response.json().catch(() => null);
 
       if (!response.ok || !data?.success) {
-        return { success: false, error: data?.error || 'Failed to initiate payment' };
+        const errorMsg = data?.error || data?.message || data?.details?.message || 'Failed to initiate payment';
+        console.error('Payment initiation failed:', data);
+        return { success: false, error: errorMsg };
       }
 
       toast.success('STK Push sent! Check your phone and enter PIN.');

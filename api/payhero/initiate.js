@@ -71,12 +71,15 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json().catch(() => null);
-    console.log('PayHero response:', data);
+    console.log('PayHero response status:', response.status);
+    console.log('PayHero response data:', data);
 
     if (!response.ok || !data) {
       return res.status(response.status || 500).json({
         success: false,
-        error: data?.message || 'Failed to initiate payment',
+        error: data?.message || data?.error || 'Failed to initiate payment',
+        details: data,
+        status: response.status,
       });
     }
 
