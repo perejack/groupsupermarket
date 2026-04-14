@@ -16,6 +16,22 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
   },
 });
 
+// Helper to parse body
+async function parseBody(req) {
+  return new Promise((resolve) => {
+    let data = '';
+    req.on('data', chunk => data += chunk);
+    req.on('end', () => {
+      try {
+        resolve(JSON.parse(data));
+      } catch {
+        resolve(req.body || {});
+      }
+    });
+    req.on('error', () => resolve(req.body || {}));
+  });
+}
+
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -33,21 +49,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Parse request body if needed
-    let body = req.body;
-    if (typeof body === 'string') {
-      body = JSON.parse(body);
-    }
+    // Parse request body
+    const body = await parseBody(req);
     
-    const { phone_number, amount, reference, description, user_id, application_id } = body || {};
+    const { phone_number, amount, reference, description, user_id, application_id } = body;
     
-    console.log('Received request body:', body);
-    console.log('Phone:', phone_number, 'Amount:', amount);
+    console.log('Received body:', JSON.stringify(body));
+    console.log('Phone:', phone_number, 'Amount:', amount, 'Type:', typeof amount);
     
-    if (!phone_number || !amount) {
+    if (!phone_number || amount === undefined || amount === null) {
       return res.status(400).json({ 
         error: 'Phone number and amount are required',
-        received: { phone_number, amount }
+        received: { phone_number, amount, bodyKeys: Object.keys(body) }
       });
     }
 
