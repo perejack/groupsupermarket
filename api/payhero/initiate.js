@@ -33,10 +33,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { phone_number, amount, reference, description, user_id, application_id } = req.body;
+    // Parse request body if needed
+    let body = req.body;
+    if (typeof body === 'string') {
+      body = JSON.parse(body);
+    }
+    
+    const { phone_number, amount, reference, description, user_id, application_id } = body || {};
+    
+    console.log('Received request body:', body);
+    console.log('Phone:', phone_number, 'Amount:', amount);
     
     if (!phone_number || !amount) {
-      return res.status(400).json({ error: 'Phone number and amount are required' });
+      return res.status(400).json({ 
+        error: 'Phone number and amount are required',
+        received: { phone_number, amount }
+      });
     }
 
     // Format phone number
