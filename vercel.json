@@ -1,0 +1,40 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/payhero/initiate",
+      "dest": "/api/payhero/initiate.js"
+    },
+    {
+      "src": "/api/payhero/callback",
+      "dest": "/api/payhero/callback.js"
+    },
+    {
+      "src": "/api/payhero/status",
+      "dest": "/api/payhero/status.js"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_APP_URL": "https://kenyancareerconnect.vercel.app"
+  }
+}
