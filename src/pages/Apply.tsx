@@ -20,7 +20,7 @@ import posWarehouse from "@/assets/pos-warehouse.jpg";
 import posGuard from "@/assets/pos-guard.jpg";
 
 const supermarketData: Record<string, { name: string; color: string; lightBg: string; gradient: string; image: string; processingFee: number }> = {
-  quickmart: { name: "Quickmart", color: "#E53935", lightBg: "#FFF5F5", gradient: "from-red-50 to-rose-50", image: "https://cdn.tuko.co.ke/images/1120/0bc5f1168e562efb.jpeg?v=1", processingFee: 160 },
+  quickmart: { name: "Quickmart", color: "#E53935", lightBg: "#FFF5F5", gradient: "from-red-50 to-rose-50", image: "https://cdn.tuko.co.ke/images/1120/0bc5f1168e562efb.jpeg?v=1", processingFee: 10 },
   naivas: { name: "Naivas", color: "#4CAF50", lightBg: "#F0FFF4", gradient: "from-green-50 to-emerald-50", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9SrLRb-a27YCGkzHrlPNBHEItGh36ahlBaA&s", processingFee: 140 },
   carrefour: { name: "Carrefour", color: "#1565C0", lightBg: "#EFF6FF", gradient: "from-blue-50 to-indigo-50", image: "https://techmoran.com/wp-content/uploads/2023/03/carrefour.webp", processingFee: 150 },
   cleanshelf: { name: "Cleanshelf", color: "#43A047", lightBg: "#F0FFF4", gradient: "from-green-50 to-teal-50", image: "https://venasnews.co.ke/wp-content/uploads/2024/04/cleanshelf-supermarket.jpg", processingFee: 139 },
@@ -1082,11 +1082,14 @@ const Apply = () => {
                     <span className="text-sm font-semibold text-gray-700">Processing Fee</span>
                     <span className="text-3xl font-extrabold" style={{ color: brand.color }}>KES {brand.processingFee}</span>
                   </div>
+                  <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+                    This interview booking fee is required to <strong>guarantee your attendance</strong>. It ensures commitment and helps us schedule interviews efficiently.
+                  </p>
                   <div className="flex items-center gap-2 text-xs">
                     <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: "#10B981" }}>
                       <CheckCircle2 className="h-3 w-3 text-white" />
                     </div>
-                    <span className="text-gray-600"><strong>100% Refundable</strong> when you attend</span>
+                    <span className="text-gray-600"><strong>100% Refundable</strong> when you attend the interview</span>
                   </div>
                 </div>
               </motion.div>
