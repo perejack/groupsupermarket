@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Briefcase, MapPin, ExternalLink } from "lucide-react";
+import { Briefcase, MapPin, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -9,83 +10,84 @@ const positions = [
 ];
 
 const employers = [
-  { name: "Quickmart", url: "https://www.quickmartopportunities.com/", color: "#4CAF50", locations: "Nairobi, Mombasa, Kisumu", branches: "70+" },
-  { name: "Naivas", url: "https://www.applicationskenya.site/", color: "#E53935", locations: "All 47 Counties", branches: "100+" },
-  { name: "Carrefour", url: "https://www.carefourcarreropportunities.site/", color: "#1565C0", locations: "Nairobi, Mombasa, Nakuru", branches: "15+" },
-  { name: "Cleanshelf", url: "https://www.cleanshelfcareeropportunities.site/", color: "#43A047", locations: "Central Kenya", branches: "20+" },
+  { name: "Quickmart", color: "#4CAF50", locations: "Nairobi, Mombasa, Kisumu", branches: "70+" },
+  { name: "Naivas", color: "#E53935", locations: "All 47 Counties", branches: "100+" },
+  { name: "Carrefour", color: "#1565C0", locations: "Nairobi, Mombasa, Nakuru", branches: "15+" },
+  { name: "Cleanshelf", color: "#43A047", locations: "Central Kenya", branches: "20+" },
 ];
 
-const Jobs = () => (
-  <div className="min-h-screen bg-background">
-    <Navbar />
-    <main className="pt-24 pb-16">
-      <section className="py-16" aria-label="All supermarket job vacancies in Kenya 2026">
-        <div className="container max-w-5xl">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3 block">All Vacancies</span>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground font-display mb-4">
-              Supermarket <span className="text-gradient-hero">Job Vacancies</span> in Kenya 2026
-            </h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-              Browse all open cashier, cleaner, driver, store keeper, chef, guard, and warehouse positions at Kenya's top supermarket chains. Click any employer to apply directly.
-            </p>
-          </motion.div>
+const Jobs = () => {
+  const navigate = useNavigate();
 
-          {/* Positions overview */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="rounded-2xl border border-border bg-card p-8 mb-12"
-          >
-            <h2 className="text-xl font-bold text-foreground font-display mb-4 flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-primary" /> Available Positions Across All Supermarkets
-            </h2>
-            <div className="flex flex-wrap gap-3">
-              {positions.map((pos) => (
-                <span key={pos} className="rounded-lg bg-muted px-4 py-2 text-sm font-medium text-foreground">
-                  {pos}
-                </span>
-              ))}
-            </div>
-          </motion.div>
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main className="pt-24 pb-16">
+        <section className="py-16" aria-label="All supermarket job vacancies in Kenya 2026">
+          <div className="container max-w-5xl">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3 block">All Vacancies</span>
+              <h1 className="text-4xl md:text-5xl font-bold text-foreground font-display mb-4">
+                Supermarket <span className="text-gradient-hero">Job Vacancies</span> in Kenya 2026
+              </h1>
+              <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+                Browse all open cashier, cleaner, driver, store keeper, chef, guard, and warehouse positions at Kenya's top supermarket chains. Click any employer to apply directly.
+              </p>
+            </motion.div>
 
-          {/* Employer cards */}
-          <div className="space-y-6">
-            {employers.map((emp, i) => (
-              <motion.a
-                key={emp.name}
-                href={emp.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className="flex flex-col md:flex-row items-start md:items-center justify-between rounded-2xl border border-border bg-card p-8 hover:border-primary/30 hover:shadow-[var(--card-glow)] transition-all group"
-              >
-                <div className="flex items-center gap-4 mb-4 md:mb-0">
-                  <div
-                    className="flex h-12 w-12 items-center justify-center rounded-xl text-white font-bold text-lg shrink-0"
-                    style={{ backgroundColor: emp.color }}
-                  >
-                    {emp.name[0]}
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-foreground font-display">{emp.name}</h3>
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
-                      <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{emp.locations}</span>
-                      <span>•</span>
-                      <span>{emp.branches} branches</span>
+            {/* Positions overview */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="rounded-2xl border border-border bg-card p-8 mb-12"
+            >
+              <h2 className="text-xl font-bold text-foreground font-display mb-4 flex items-center gap-2">
+                <Briefcase className="h-5 w-5 text-primary" /> Available Positions Across All Supermarkets
+              </h2>
+              <div className="flex flex-wrap gap-3">
+                {positions.map((pos) => (
+                  <span key={pos} className="rounded-lg bg-muted px-4 py-2 text-sm font-medium text-foreground">
+                    {pos}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Employer cards */}
+            <div className="space-y-6">
+              {employers.map((emp, i) => (
+                <motion.button
+                  key={emp.name}
+                  onClick={() => navigate(`/apply/${emp.name.toLowerCase()}`)}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="w-full flex flex-col md:flex-row items-start md:items-center justify-between rounded-2xl border border-border bg-card p-8 hover:border-primary/30 hover:shadow-[var(--card-glow)] transition-all group text-left cursor-pointer"
+                >
+                  <div className="flex items-center gap-4 mb-4 md:mb-0">
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-xl text-white font-bold text-lg shrink-0"
+                      style={{ backgroundColor: emp.color }}
+                    >
+                      {emp.name[0]}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-foreground font-display">{emp.name}</h3>
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
+                        <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{emp.locations}</span>
+                        <span>•</span>
+                        <span>{emp.branches} branches</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2 text-sm font-semibold transition-colors" style={{ color: emp.color }}>
-                  Apply Now <ExternalLink className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </motion.a>
-            ))}
-          </div>
+                  <div className="flex items-center gap-2 text-sm font-semibold transition-colors" style={{ color: emp.color }}>
+                    Apply Now <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </motion.button>
+              ))}
+            </div>
 
           {/* SEO content */}
           <motion.div
@@ -108,6 +110,7 @@ const Jobs = () => (
     </main>
     <Footer />
   </div>
-);
+  );
+};
 
 export default Jobs;
