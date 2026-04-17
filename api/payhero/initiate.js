@@ -65,6 +65,7 @@ export default async function handler(req, res) {
         channel_id: PAYHERO_CHANNEL_ID,
         provider: 'm-pesa',
         external_reference: externalReference,
+        callback_url: callbackUrl,
       }),
     });
 
