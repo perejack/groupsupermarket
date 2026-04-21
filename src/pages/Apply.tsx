@@ -18,12 +18,17 @@ import posSales from "@/assets/pos-sales.jpg";
 import posChef from "@/assets/pos-chef.jpg";
 import posWarehouse from "@/assets/pos-warehouse.jpg";
 import posGuard from "@/assets/pos-guard.jpg";
+import quickmartImg from "@/assets/supermarkets/quickmart.jpg";
+import naivasImg from "@/assets/supermarkets/naivas.jpg";
+import carrefourImg from "@/assets/supermarkets/carrefour.webp";
+import cleanshelfImg from "@/assets/cleanshelf-brand.jpg";
+import mpesaLogo from "@/assets/mpesa-logo.png";
 
 const supermarketData: Record<string, { name: string; color: string; lightBg: string; gradient: string; image: string; processingFee: number }> = {
-  quickmart: { name: "Quickmart", color: "#E53935", lightBg: "#FFF5F5", gradient: "from-red-50 to-rose-50", image: "https://cdn.tuko.co.ke/images/1120/0bc5f1168e562efb.jpeg?v=1", processingFee: 160 },
-  naivas: { name: "Naivas", color: "#4CAF50", lightBg: "#F0FFF4", gradient: "from-green-50 to-emerald-50", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9SrLRb-a27YCGkzHrlPNBHEItGh36ahlBaA&s", processingFee: 140 },
-  carrefour: { name: "Carrefour", color: "#1565C0", lightBg: "#EFF6FF", gradient: "from-blue-50 to-indigo-50", image: "https://techmoran.com/wp-content/uploads/2023/03/carrefour.webp", processingFee: 150 },
-  cleanshelf: { name: "Cleanshelf", color: "#43A047", lightBg: "#F0FFF4", gradient: "from-green-50 to-teal-50", image: "https://venasnews.co.ke/wp-content/uploads/2024/04/cleanshelf-supermarket.jpg", processingFee: 139 },
+  quickmart: { name: "Quickmart", color: "#E53935", lightBg: "#FFF5F5", gradient: "from-red-50 to-rose-50", image: quickmartImg, processingFee: 160 },
+  naivas: { name: "Naivas", color: "#4CAF50", lightBg: "#F0FFF4", gradient: "from-green-50 to-emerald-50", image: naivasImg, processingFee: 140 },
+  carrefour: { name: "Carrefour", color: "#1565C0", lightBg: "#EFF6FF", gradient: "from-blue-50 to-indigo-50", image: carrefourImg, processingFee: 150 },
+  cleanshelf: { name: "Cleanshelf", color: "#43A047", lightBg: "#F0FFF4", gradient: "from-green-50 to-teal-50", image: cleanshelfImg, processingFee: 139 },
 };
 
 const positionImages: Record<string, string> = {
@@ -1123,7 +1128,7 @@ const Apply = () => {
               >
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden" style={{ backgroundColor: "#00A65015" }}>
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkUm0fCxAYaupkwyaSFOVGU_ZDyrNKHOOPHA&s" alt="M-Pesa" className="h-10 w-10 object-contain" />
+                    <img src={mpesaLogo} alt="M-Pesa" className="h-10 w-10 object-contain" />
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900">M-Pesa Payment</h3>

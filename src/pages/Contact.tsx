@@ -48,23 +48,32 @@ const Contact = () => (
             ))}
           </div>
 
-          {/* Embedded map */}
+          {/* Location info */}
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="mt-10 rounded-2xl overflow-hidden border border-border"
+            transition={{ duration: 0.8 }}
+            className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100"
           >
-            <iframe
-              title="SuperJobs Kenya Office Location - 209 Lenana Road Nairobi"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8176!2d36.7849!3d-1.2921!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMcKwMTcnMzEuNiJTIDM2wrA0NycwNS42IkU!5e0!3m2!1sen!2ske!4v1"
-              width="100%"
-              height="350"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500 flex items-center justify-center shrink-0">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">Our Office</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  209 Lenana Road, Nairobi<br />
+                  Kenya
+                </p>
+                <p className="text-emerald-600 text-sm mt-2 font-medium">
+                  Open Monday – Friday, 8:00 AM – 5:00 PM
+                </p>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
