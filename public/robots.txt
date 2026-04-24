@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://superjobskenya.com/sitemap.xml
+Sitemap: https://www.supermarkethiring.space/sitemap.xml
