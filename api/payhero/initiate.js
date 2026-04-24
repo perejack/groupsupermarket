@@ -50,7 +50,7 @@ export default async function handler(req, res) {
     // Get callback URL from request or use default
     const callbackUrl = req.headers.origin 
       ? `${req.headers.origin}/api/payhero/callback`
-      : 'https://www.careersapplicationskenya.site/api/payhero/callback';
+      : 'https://www.supermarkethiring.space/api/payhero/callback';
 
     // Call PayHero API
     const response = await fetch(PAYHERO_API_URL, {

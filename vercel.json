@@ -35,6 +35,6 @@
     }
   ],
   "env": {
-    "VITE_APP_URL": "https://kenyancareerconnect.vercel.app"
+    "VITE_APP_URL": "https://www.supermarkethiring.space"
   }
 }
