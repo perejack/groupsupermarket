@@ -17,7 +17,7 @@ export const GOOGLE_ADS_ID = "AW-18409428048";
  * Once you create the conversion action in Google Ads (Category: Purchase),
  * copy the full send_to string here.
  */
-export const GOOGLE_ADS_CONVERSION_SEND_TO = "AW-18409428048/REPLACE_WITH_YOUR_CONVERSION_LABEL";
+export const GOOGLE_ADS_CONVERSION_SEND_TO = "AW-18409428048/pjLoCLT8hugcENCopspE";
 
 interface ConversionParams {
   /** The confirmed HashPay application ID — used as the transaction_id to prevent duplicate counting. */
