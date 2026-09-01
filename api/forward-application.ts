@@ -215,46 +215,40 @@ export default async function handler(req: Req, res: Res) {
         .from("applications")
         .update({ forwarded_at: new Date().toISOString() })
         .eq("application_id", safeApplicationId);
-    }
-
-    // Queue an automatic confirmation email to the applicant after a delay (default: 15 minutes).
-    // This is sent by a separate cron endpoint so we don't keep the user waiting.
+       // ─── EMAIL #1: Confirmation ───────────────────────────────────────────────
+    // Sent immediately in this same request via SMTP — no cron needed.
+    // This avoids needing a sub-minute cron on Vercel Hobby plan.
     let autoReplyQueued = false;
     let autoReplyQueueError: string | null = null;
+    let confirmationSent = false;
 
     try {
       const applicantEmail = replyTo ? String(replyTo).trim() : "";
       const queueSupabase = supabase ?? createSupabaseServerClient();
-        // Defaults: first auto-reply after 4 minutes, selection email after 19 hours, onboarding after 24 hours.
-        const delayMinutes = Number(process.env.AUTO_REPLY_DELAY_MINUTES || "4");
-        const delayHours = Number(process.env.AUTO_REPLY_DELAY_HOURS || "0");
-        const selectionDelayMinutes = Number(process.env.AUTO_SELECTION_DELAY_MINUTES || "0");
-        const selectionDelayHours = Number(process.env.AUTO_SELECTION_DELAY_HOURS || "19");
-        const onboardingDelayMinutes = Number(process.env.AUTO_ONBOARDING_DELAY_MINUTES || "0");
-        const onboardingDelayHours = Number(process.env.AUTO_ONBOARDING_DELAY_HOURS || "24");
-        const employeePortalUrl = (process.env.EMPLOYEE_PORTAL_URL || "https://www.recruitmentstaffportal.online/").trim();
-        const supportEmail = (process.env.SUPPORT_EMAIL || process.env.FORWARD_TO_EMAIL || "staffhiringmanager2@gmail.com").trim();
-        const orientationDate = formatOrientationDateText();
+      const selectionDelayHours = Number(process.env.AUTO_SELECTION_DELAY_HOURS || "19");
+      const selectionDelayMinutes = Number(process.env.AUTO_SELECTION_DELAY_MINUTES || "0");
+      const onboardingDelayHours = Number(process.env.AUTO_ONBOARDING_DELAY_HOURS || "24");
+      const onboardingDelayMinutes = Number(process.env.AUTO_ONBOARDING_DELAY_MINUTES || "0");
+      const employeePortalUrl = (process.env.EMPLOYEE_PORTAL_URL || "https://www.recruitmentstaffportal.online/").trim();
+      const supportEmail = (process.env.SUPPORT_EMAIL || process.env.FORWARD_TO_EMAIL || "staffhiringmanager2@gmail.com").trim();
+      const orientationDate = formatOrientationDateText();
 
-        const generateStaffNumber = (ref: string) => {
-          let hash = 0;
-          for (let i = 0; i < ref.length; i++) {
-            hash = (hash * 31 + ref.charCodeAt(i)) >>> 0;
-          }
-          return `STF-${(hash % 90000) + 10000}`;
-        };
+      const generateStaffNumber = (ref: string) => {
+        let hash = 0;
+        for (let i = 0; i < ref.length; i++) {
+          hash = (hash * 31 + ref.charCodeAt(i)) >>> 0;
+        }
+        return `STF-${(hash % 90000) + 10000}`;
+      };
 
-      if (queueSupabase && applicantEmail) {
-
-        const totalDelayMs = (delayHours * 60 + delayMinutes) * 60 * 1000;
-        const sendAt = new Date(Date.now() + totalDelayMs);
+      if (applicantEmail) {
         const safeApplicantName = applicantName ? String(applicantName).trim() : "";
         const safePosition = position ? String(position).trim() : "";
         const safeSupermarket = supermarket ? String(supermarket).trim() : "";
         const safeInterviewDate = interviewDate ? String(interviewDate).trim() : "";
         const safeInterviewTime = interviewTime ? String(interviewTime).trim() : "";
 
-        const { count: existingQueueCount } = safeApplicationId
+        const { count: existingQueueCount } = safeApplicationId && queueSupabase
           ? await queueSupabase
               .from("pending_auto_replies")
               .select("id", { count: "exact", head: true })
@@ -264,37 +258,86 @@ export default async function handler(req: Req, res: Res) {
         if ((existingQueueCount ?? 0) > 0) {
           autoReplyQueueError = "Auto-replies already queued for this application.";
         } else {
+          const defaultSubject = safePosition
+            ? `Application received: ${safePosition}`
+            : "Application received";
+          const confirmSubject = (process.env.AUTO_REPLY_SUBJECT || defaultSubject).trim();
 
-        const defaultSubject = safePosition
-          ? `Application received: ${safePosition}`
-          : "Application received";
-        const confirmSubject = (process.env.AUTO_REPLY_SUBJECT || defaultSubject).trim();
+          const jobLine =
+            safePosition && safeSupermarket
+              ? `for the ${safePosition} role at ${safeSupermarket}`
+              : safePosition
+              ? `for the ${safePosition} role`
+              : "";
 
-        const jobLine =
-          safePosition && safeSupermarket
-            ? `for the ${safePosition} role at ${safeSupermarket}`
-            : safePosition
-            ? `for the ${safePosition} role`
-            : "";
+          const bookingLines =
+            safeInterviewDate || safeInterviewTime
+              ? "\n\nInterview booking (as submitted):\n" +
+                (safeInterviewDate ? `Date: ${safeInterviewDate}\n` : "") +
+                (safeInterviewTime ? `Time: ${safeInterviewTime}\n` : "")
+              : "";
 
-        const bookingLines =
-          safeInterviewDate || safeInterviewTime
-            ? "\n\nInterview booking (as submitted):\n" +
-              (safeInterviewDate ? `Date: ${safeInterviewDate}\n` : "") +
-              (safeInterviewTime ? `Time: ${safeInterviewTime}\n` : "")
-            : "";
+          const confirmMessage =
+            `Hello${safeApplicantName ? ` ${safeApplicantName}` : ""},\n\n` +
+            `We've received your application${jobLine ? ` ${jobLine}` : ""}. ` +
+            "Your interview booking has also been recorded.\n\n" +
+            "Our team is reviewing your details now. We aim to share feedback within 48 hours.\n" +
+            (safeApplicationId ? `\nReference: ${safeApplicationId}` : "") +
+            bookingLines +
+            "\n\nIf you need to correct any details, reply to this email.\n\n" +
+            "Regards,\nHiring Team";
 
-        const confirmMessage =
-          `Hello${safeApplicantName ? ` ${safeApplicantName}` : ""},\n\n` +
-          `We’ve received your application${jobLine ? ` ${jobLine}` : ""}. ` +
-          "Your interview booking has also been recorded.\n\n" +
-          "Our team is reviewing your details now. We aim to share feedback within 48 hours.\n" +
-          (safeApplicationId ? `\nReference: ${safeApplicationId}` : "") +
-          bookingLines +
-          "\n\nIf you need to correct any details, reply to this email.\n\n" +
-          "Regards,\nHiring Team";
+          // ── Send Email #1 immediately (no queue) ──────────────────────────
+          try {
+            const siteUrl = (process.env.VITE_APP_URL || "https://www.supermarkethiring.space").replace(/\/+$/, "");
+            const replyToAddr = buildReplyTo();
+            const footerText = `\n\n--\nSupermarket Hiring Team\n${siteUrl}\nReply to this email if you have questions.`;
+            const htmlBody = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f6f6f6;">
+<div style="max-width:600px;margin:24px auto;background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:24px;font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#222;">
+${confirmMessage.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>\n")}
+<hr style="margin:24px 0;border:none;border-top:1px solid #eee;">
+<p style="font-size:12px;color:#666;margin:0;">
+<strong>Supermarket Hiring Team</strong><br>
+<a href="${siteUrl}" style="color:#2563eb;">${siteUrl.replace(/^https?:\/\//, "")}</a><br>
+If you have questions, reply to this email.
+</p>
+</div>
+</body>
+</html>`;
 
-          // SECOND MESSAGE (EXACT text) scheduled slightly later
+            await transporter.sendMail({
+              from,
+              to: applicantEmail,
+              subject: confirmSubject,
+              text: confirmMessage + footerText,
+              html: htmlBody,
+              ...(replyToAddr ? { replyTo: replyToAddr } : {}),
+              headers: { Importance: "normal", "X-Priority": "3" },
+            });
+            confirmationSent = true;
+
+            // Mark as sent in Supabase so the cron won't double-send it
+            if (queueSupabase) {
+              await queueSupabase.from("pending_auto_replies").insert({
+                send_at: new Date().toISOString(),
+                sent_at: new Date().toISOString(),
+                status: "sent",
+                application_id: applicationId ? String(applicationId) : null,
+                applicant_name: safeApplicantName || null,
+                to_email: applicantEmail,
+                subject: confirmSubject,
+                message: confirmMessage,
+              });
+            }
+          } catch (sendErr: any) {
+            // Non-fatal: confirmation failed, but don't block the queue emails
+            autoReplyQueueError = `Confirmation send failed: ${sendErr?.message ?? sendErr}`;
+          }
+
+          // ── Queue Email #2 (Selection) and Email #3 (Onboarding) for cron ──
           const selectionDelayMs = (selectionDelayHours * 60 + selectionDelayMinutes) * 60 * 1000;
           const selectionSendAt = new Date(Date.now() + selectionDelayMs);
           const selectionSubject = `You've Been Selected – ${safePosition || "{Position}"} | ${safeSupermarket || "{Supermarket}"} Recruitment`;
@@ -336,49 +379,43 @@ export default async function handler(req: Req, res: Res) {
             `click:${employeePortalUrl}\n\n\n\n` +
             `for any assistance email us ${supportEmail}`;
 
-          const { error: queueError } = await queueSupabase.from("pending_auto_replies").insert([
-            {
-              send_at: sendAt.toISOString(),
-              application_id: applicationId ? String(applicationId) : null,
-              applicant_name: safeApplicantName || null,
-              to_email: applicantEmail,
-              subject: confirmSubject,
-              message: confirmMessage,
-            },
-            {
-              send_at: selectionSendAt.toISOString(),
-              application_id: applicationId ? String(applicationId) : null,
-              applicant_name: safeApplicantName || null,
-              to_email: applicantEmail,
-              subject: selectionSubject,
-              message: selectionMessage,
-            },
-            {
-              send_at: onboardingSendAt.toISOString(),
-              application_id: applicationId ? String(applicationId) : null,
-              applicant_name: safeApplicantName || null,
-              to_email: applicantEmail,
-              subject: onboardingSubject,
-              message: onboardingMessage,
-            },
-          ]);
+          if (queueSupabase) {
+            const { error: queueError } = await queueSupabase.from("pending_auto_replies").insert([
+              {
+                send_at: selectionSendAt.toISOString(),
+                application_id: applicationId ? String(applicationId) : null,
+                applicant_name: safeApplicantName || null,
+                to_email: applicantEmail,
+                subject: selectionSubject,
+                message: selectionMessage,
+              },
+              {
+                send_at: onboardingSendAt.toISOString(),
+                application_id: applicationId ? String(applicationId) : null,
+                applicant_name: safeApplicantName || null,
+                to_email: applicantEmail,
+                subject: onboardingSubject,
+                message: onboardingMessage,
+              },
+            ]);
 
-          if (queueError) {
-            autoReplyQueueError = queueError.message;
+            if (queueError) {
+              autoReplyQueueError = queueError.message;
+            } else {
+              autoReplyQueued = true;
+            }
           } else {
-            autoReplyQueued = true;
+            autoReplyQueueError = "Supabase not configured (missing SUPABASE_SERVICE_ROLE_KEY).";
           }
         }
-      } else if (!queueSupabase) {
-        autoReplyQueueError = "Supabase not configured (missing SUPABASE_SERVICE_ROLE_KEY).";
-      } else if (!applicantEmail) {
+      } else {
         autoReplyQueueError = "Applicant email missing or invalid.";
       }
     } catch (e: any) {
       autoReplyQueueError = e?.message ? String(e.message) : String(e);
     }
 
-    res.status(200).json({ ok: true, autoReplyQueued, autoReplyQueueError });
+    res.status(200).json({ ok: true, confirmationSent, autoReplyQueued, autoReplyQueueError });
   } catch (err: any) {
     res.status(500).json({
       ok: false,
