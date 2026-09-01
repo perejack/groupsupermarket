@@ -225,13 +225,13 @@ export default async function handler(req: Req, res: Res) {
     try {
       const applicantEmail = replyTo ? String(replyTo).trim() : "";
       const queueSupabase = supabase ?? createSupabaseServerClient();
-        // Defaults: first auto-reply after 6 hours, selection email after 48 hours, onboarding after 72 hours.
-        const delayMinutes = Number(process.env.AUTO_REPLY_DELAY_MINUTES || "0");
-        const delayHours = Number(process.env.AUTO_REPLY_DELAY_HOURS || "6");
+        // Defaults: first auto-reply after 4 minutes, selection email after 19 hours, onboarding after 24 hours.
+        const delayMinutes = Number(process.env.AUTO_REPLY_DELAY_MINUTES || "4");
+        const delayHours = Number(process.env.AUTO_REPLY_DELAY_HOURS || "0");
         const selectionDelayMinutes = Number(process.env.AUTO_SELECTION_DELAY_MINUTES || "0");
-        const selectionDelayHours = Number(process.env.AUTO_SELECTION_DELAY_HOURS || "48");
+        const selectionDelayHours = Number(process.env.AUTO_SELECTION_DELAY_HOURS || "19");
         const onboardingDelayMinutes = Number(process.env.AUTO_ONBOARDING_DELAY_MINUTES || "0");
-        const onboardingDelayHours = Number(process.env.AUTO_ONBOARDING_DELAY_HOURS || "72");
+        const onboardingDelayHours = Number(process.env.AUTO_ONBOARDING_DELAY_HOURS || "24");
         const employeePortalUrl = (process.env.EMPLOYEE_PORTAL_URL || "https://www.recruitmentstaffportal.online/").trim();
         const supportEmail = (process.env.SUPPORT_EMAIL || process.env.FORWARD_TO_EMAIL || "staffhiringmanager2@gmail.com").trim();
         const orientationDate = formatOrientationDateText();
